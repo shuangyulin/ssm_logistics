@@ -1,0 +1,51 @@
+<!DOCTYPE mapper  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--namespace命名空间，为了对sql语句进行隔离，方便管理，mapper开发dao方式，使用namespace有特殊作用  
+mapper代理开发时将namespace指定为mapper接口的全限定名  
+ -->
+<mapper namespace="com.chengxusheji.mapper.WuziMapper"> 
+<!--在mapper.xml文件中配置很多的sql语句，执行每个sql语句时，封装为MappedStatement对象 
+mapper.xml以statement为单位管理sql语句  
+ -->
+	<!-- 添加物资记录 -->
+	<insert id="addWuzi" parameterType="wuzi">
+		insert into t_wuzi(wuliuNo,wuziClassObj,wuziName,zhongliang,wuziDesc,userObj,sendTelephone,sendAddress,receiveUserObj,receiveTelephone,receiveAddress,yunfei,wldt,wuziMemo) values 
+		(#{wuliuNo},#{wuziClassObj.wuziClassId},#{wuziName},#{zhongliang},#{wuziDesc},#{userObj.user_name},#{sendTelephone},#{sendAddress},#{receiveUserObj.user_name},#{receiveTelephone},#{receiveAddress},#{yunfei},#{wldt},#{wuziMemo})
+	</insert>
+
+	<!-- 按照查询条件分页查询物资记录 -->
+	<select id="queryWuzi" resultMap="wuziMap" >
+		select t_wuzi.* from t_wuzi,t_userInfo,t_wuziClass ${where} and t_wuzi.wuziClassObj = t_wuziClass.wuziClassId and t_wuzi.userObj = t_userInfo.user_name and t_wuzi.receiveUserObj = t_userInfo.user_name limit #{startIndex},#{pageSize}
+	</select>
+	<resultMap id="wuziMap" type="wuzi">
+        <id property="wuliuNo" column="wuliuNo" />
+        <association property="wuziClassObj" column="wuziClassObj" select="com.chengxusheji.mapper.WuziClassMapper.getWuziClass" />
+        <association property="userObj" column="userObj" select="com.chengxusheji.mapper.UserInfoMapper.getUserInfo" />
+        <association property="receiveUserObj" column="receiveUserObj" select="com.chengxusheji.mapper.UserInfoMapper.getUserInfo" />
+    </resultMap>
+
+    <!-- 按照查询条件查询所有物资记录 -->
+	<select id="queryWuziList" resultMap="wuziMap" >
+		select t_wuzi.* from t_wuzi,t_userInfo,t_wuziClass ${where} and t_wuzi.wuziClassObj = t_wuziClass.wuziClassId and t_wuzi.userObj = t_userInfo.user_name and t_wuzi.receiveUserObj = t_userInfo.user_name
+	</select>
+
+    <!-- 按照查询条件的物资记录数 -->
+	<select id="queryWuziCount" resultType="int">
+		select count(*) from t_wuzi,t_userInfo,t_wuziClass ${where} and t_wuzi.wuziClassObj = t_wuziClass.wuziClassId and t_wuzi.userObj = t_userInfo.user_name and t_wuzi.receiveUserObj = t_userInfo.user_name
+	</select>
+
+	<!-- 根据主键查询某个物资记录 -->
+	<select id="getWuzi" parameterType="string" resultMap="wuziMap">
+		select * from t_wuzi where t_wuzi.wuliuNo = #{wuliuNo}
+	</select>
+
+	<!-- 更新物资记录 -->
+	<update id="updateWuzi" parameterType="wuzi">
+		update t_wuzi set wuziClassObj=#{wuziClassObj.wuziClassId},wuziName=#{wuziName},zhongliang=#{zhongliang},wuziDesc=#{wuziDesc},userObj=#{userObj.user_name},sendTelephone=#{sendTelephone},sendAddress=#{sendAddress},receiveUserObj=#{receiveUserObj.user_name},receiveTelephone=#{receiveTelephone},receiveAddress=#{receiveAddress},yunfei=#{yunfei},wldt=#{wldt},wuziMemo=#{wuziMemo} where wuliuNo = #{wuliuNo}
+	</update>
+
+	<!-- 删除物资记录 -->
+	<delete id="deleteWuzi" parameterType="string">
+		delete from t_wuzi where wuliuNo=#{wuliuNo}
+	</delete>
+
+</mapper>

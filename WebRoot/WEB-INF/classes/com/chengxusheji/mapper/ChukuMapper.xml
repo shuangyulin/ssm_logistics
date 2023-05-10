@@ -1,0 +1,52 @@
+<!DOCTYPE mapper  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--namespace命名空间，为了对sql语句进行隔离，方便管理，mapper开发dao方式，使用namespace有特殊作用  
+mapper代理开发时将namespace指定为mapper接口的全限定名  
+ -->
+<mapper namespace="com.chengxusheji.mapper.ChukuMapper"> 
+<!--在mapper.xml文件中配置很多的sql语句，执行每个sql语句时，封装为MappedStatement对象 
+mapper.xml以statement为单位管理sql语句  
+ -->
+	<!-- 添加出库记录 -->
+	<insert id="addChuku" parameterType="chuku">
+		insert into t_chuku(wuziObj,wuziClassObj,zhongliang,cangkuObj,chukuTime,okFlag,workManObj,chukuMemo) values 
+		(#{wuziObj.wuliuNo},#{wuziClassObj.wuziClassId},#{zhongliang},#{cangkuObj.cangkuId},#{chukuTime},#{okFlag},#{workManObj.workUserName},#{chukuMemo})
+	</insert>
+
+	<!-- 按照查询条件分页查询出库记录 -->
+	<select id="queryChuku" resultMap="chukuMap" >
+		select t_chuku.* from t_chuku,t_cangku,t_workMan,t_wuzi,t_wuziClass ${where} and t_chuku.wuziObj = t_wuzi.wuliuNo and t_chuku.wuziClassObj = t_wuziClass.wuziClassId and t_chuku.cangkuObj = t_cangku.cangkuId and t_chuku.workManObj = t_workMan.workUserName limit #{startIndex},#{pageSize}
+	</select>
+	<resultMap id="chukuMap" type="chuku">
+        <id property="chukuId" column="chukuId" />
+        <association property="wuziObj" column="wuziObj" select="com.chengxusheji.mapper.WuziMapper.getWuzi" />
+        <association property="wuziClassObj" column="wuziClassObj" select="com.chengxusheji.mapper.WuziClassMapper.getWuziClass" />
+        <association property="cangkuObj" column="cangkuObj" select="com.chengxusheji.mapper.CangkuMapper.getCangku" />
+        <association property="workManObj" column="workManObj" select="com.chengxusheji.mapper.WorkManMapper.getWorkMan" />
+    </resultMap>
+
+    <!-- 按照查询条件查询所有出库记录 -->
+	<select id="queryChukuList" resultMap="chukuMap" >
+		select t_chuku.* from t_chuku,t_cangku,t_workMan,t_wuzi,t_wuziClass ${where} and t_chuku.wuziObj = t_wuzi.wuliuNo and t_chuku.wuziClassObj = t_wuziClass.wuziClassId and t_chuku.cangkuObj = t_cangku.cangkuId and t_chuku.workManObj = t_workMan.workUserName
+	</select>
+
+    <!-- 按照查询条件的出库记录数 -->
+	<select id="queryChukuCount" resultType="int">
+		select count(*) from t_chuku,t_cangku,t_workMan,t_wuzi,t_wuziClass ${where} and t_chuku.wuziObj = t_wuzi.wuliuNo and t_chuku.wuziClassObj = t_wuziClass.wuziClassId and t_chuku.cangkuObj = t_cangku.cangkuId and t_chuku.workManObj = t_workMan.workUserName
+	</select>
+
+	<!-- 根据主键查询某个出库记录 -->
+	<select id="getChuku" parameterType="int" resultMap="chukuMap">
+		select * from t_chuku where t_chuku.chukuId = #{chukuId}
+	</select>
+
+	<!-- 更新出库记录 -->
+	<update id="updateChuku" parameterType="chuku">
+		update t_chuku set wuziObj=#{wuziObj.wuliuNo},wuziClassObj=#{wuziClassObj.wuziClassId},zhongliang=#{zhongliang},cangkuObj=#{cangkuObj.cangkuId},chukuTime=#{chukuTime},okFlag=#{okFlag},workManObj=#{workManObj.workUserName},chukuMemo=#{chukuMemo} where chukuId = #{chukuId}
+	</update>
+
+	<!-- 删除出库记录 -->
+	<delete id="deleteChuku" parameterType="int">
+		delete from t_chuku where chukuId=#{chukuId}
+	</delete>
+
+</mapper>

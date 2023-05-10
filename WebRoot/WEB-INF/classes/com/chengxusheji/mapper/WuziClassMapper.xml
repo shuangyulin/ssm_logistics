@@ -1,0 +1,48 @@
+<!DOCTYPE mapper  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--namespace命名空间，为了对sql语句进行隔离，方便管理，mapper开发dao方式，使用namespace有特殊作用  
+mapper代理开发时将namespace指定为mapper接口的全限定名  
+ -->
+<mapper namespace="com.chengxusheji.mapper.WuziClassMapper"> 
+<!--在mapper.xml文件中配置很多的sql语句，执行每个sql语句时，封装为MappedStatement对象 
+mapper.xml以statement为单位管理sql语句  
+ -->
+	<!-- 添加物资种类记录 -->
+	<insert id="addWuziClass" parameterType="wuziClass">
+		insert into t_wuziClass(wuziClassName) values 
+		(#{wuziClassName})
+	</insert>
+
+	<!-- 按照查询条件分页查询物资种类记录 -->
+	<select id="queryWuziClass" resultMap="wuziClassMap" >
+		select t_wuziClass.* from t_wuziClass ${where} limit #{startIndex},#{pageSize}
+	</select>
+	<resultMap id="wuziClassMap" type="wuziClass">
+        <id property="wuziClassId" column="wuziClassId" />
+    </resultMap>
+
+    <!-- 按照查询条件查询所有物资种类记录 -->
+	<select id="queryWuziClassList" resultMap="wuziClassMap" >
+		select t_wuziClass.* from t_wuziClass ${where}
+	</select>
+
+    <!-- 按照查询条件的物资种类记录数 -->
+	<select id="queryWuziClassCount" resultType="int">
+		select count(*) from t_wuziClass ${where}
+	</select>
+
+	<!-- 根据主键查询某个物资种类记录 -->
+	<select id="getWuziClass" parameterType="int" resultMap="wuziClassMap">
+		select * from t_wuziClass where t_wuziClass.wuziClassId = #{wuziClassId}
+	</select>
+
+	<!-- 更新物资种类记录 -->
+	<update id="updateWuziClass" parameterType="wuziClass">
+		update t_wuziClass set wuziClassName=#{wuziClassName} where wuziClassId = #{wuziClassId}
+	</update>
+
+	<!-- 删除物资种类记录 -->
+	<delete id="deleteWuziClass" parameterType="int">
+		delete from t_wuziClass where wuziClassId=#{wuziClassId}
+	</delete>
+
+</mapper>

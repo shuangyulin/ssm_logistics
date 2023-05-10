@@ -1,0 +1,52 @@
+<!DOCTYPE mapper  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--namespace命名空间，为了对sql语句进行隔离，方便管理，mapper开发dao方式，使用namespace有特殊作用  
+mapper代理开发时将namespace指定为mapper接口的全限定名  
+ -->
+<mapper namespace="com.chengxusheji.mapper.RukuMapper"> 
+<!--在mapper.xml文件中配置很多的sql语句，执行每个sql语句时，封装为MappedStatement对象 
+mapper.xml以statement为单位管理sql语句  
+ -->
+	<!-- 添加入库记录 -->
+	<insert id="addRuku" parameterType="ruku">
+		insert into t_ruku(wuziObj,wuziClassObj,zhongliang,cangkuObj,rukuTime,okFlag,workManObj,rukuMemo) values 
+		(#{wuziObj.wuliuNo},#{wuziClassObj.wuziClassId},#{zhongliang},#{cangkuObj.cangkuId},#{rukuTime},#{okFlag},#{workManObj.workUserName},#{rukuMemo})
+	</insert>
+
+	<!-- 按照查询条件分页查询入库记录 -->
+	<select id="queryRuku" resultMap="rukuMap" >
+		select t_ruku.* from t_ruku,t_cangku,t_workMan,t_wuzi,t_wuziClass ${where} and t_ruku.wuziObj = t_wuzi.wuliuNo and t_ruku.wuziClassObj = t_wuziClass.wuziClassId and t_ruku.cangkuObj = t_cangku.cangkuId and t_ruku.workManObj = t_workMan.workUserName limit #{startIndex},#{pageSize}
+	</select>
+	<resultMap id="rukuMap" type="ruku">
+        <id property="rukuId" column="rukuId" />
+        <association property="wuziObj" column="wuziObj" select="com.chengxusheji.mapper.WuziMapper.getWuzi" />
+        <association property="wuziClassObj" column="wuziClassObj" select="com.chengxusheji.mapper.WuziClassMapper.getWuziClass" />
+        <association property="cangkuObj" column="cangkuObj" select="com.chengxusheji.mapper.CangkuMapper.getCangku" />
+        <association property="workManObj" column="workManObj" select="com.chengxusheji.mapper.WorkManMapper.getWorkMan" />
+    </resultMap>
+
+    <!-- 按照查询条件查询所有入库记录 -->
+	<select id="queryRukuList" resultMap="rukuMap" >
+		select t_ruku.* from t_ruku,t_cangku,t_workMan,t_wuzi,t_wuziClass ${where} and t_ruku.wuziObj = t_wuzi.wuliuNo and t_ruku.wuziClassObj = t_wuziClass.wuziClassId and t_ruku.cangkuObj = t_cangku.cangkuId and t_ruku.workManObj = t_workMan.workUserName
+	</select>
+
+    <!-- 按照查询条件的入库记录数 -->
+	<select id="queryRukuCount" resultType="int">
+		select count(*) from t_ruku,t_cangku,t_workMan,t_wuzi,t_wuziClass ${where} and t_ruku.wuziObj = t_wuzi.wuliuNo and t_ruku.wuziClassObj = t_wuziClass.wuziClassId and t_ruku.cangkuObj = t_cangku.cangkuId and t_ruku.workManObj = t_workMan.workUserName
+	</select>
+
+	<!-- 根据主键查询某个入库记录 -->
+	<select id="getRuku" parameterType="int" resultMap="rukuMap">
+		select * from t_ruku where t_ruku.rukuId = #{rukuId}
+	</select>
+
+	<!-- 更新入库记录 -->
+	<update id="updateRuku" parameterType="ruku">
+		update t_ruku set wuziObj=#{wuziObj.wuliuNo},wuziClassObj=#{wuziClassObj.wuziClassId},zhongliang=#{zhongliang},cangkuObj=#{cangkuObj.cangkuId},rukuTime=#{rukuTime},okFlag=#{okFlag},workManObj=#{workManObj.workUserName},rukuMemo=#{rukuMemo} where rukuId = #{rukuId}
+	</update>
+
+	<!-- 删除入库记录 -->
+	<delete id="deleteRuku" parameterType="int">
+		delete from t_ruku where rukuId=#{rukuId}
+	</delete>
+
+</mapper>
